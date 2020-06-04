@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>source/pic/menu_icon.png</file>
+        <file>source/pic/connect.png</file>
+        <file>source/pic/disconnet.png</file>
+        <file>source/pic/sub.png</file>
+        <file>source/pic/ufo.png</file>
+        <file>source/pic/volume.png</file>
+        <file>source/pic/light_off.gif</file>
+        <file>source/pic/light_on.gif</file>
+        <file>source/pic/user.png</file>
+        <file>source/pic/field.png</file>
+        <file>source/pic/Relay.png</file>
+        <file>source/pic/flower.png</file>
+        <file>source/pic/set.png</file>
+        <file>source/pic/search.png</file>
+    </qresource>
+</RCC>
