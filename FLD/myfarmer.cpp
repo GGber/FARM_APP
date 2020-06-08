@@ -38,6 +38,16 @@ static int Char_to_data(char *ptr)
         return 0;
     else
         return R_data;
+}
+
+static int Char_to_data_2(char *ptr)
+{
+    quint8 Data_H,Data_L;
+    int Data,R_data;
+    Data_H=(quint8)*(ptr+1);
+    Data_L=(quint8)*ptr;
+    Data=(Data_H<<8)|Data_L;
+    return Data;
 
 }
 
@@ -46,6 +56,9 @@ void Myfarmer::Time_Dispose_data(QByteArray buffer)
 
     char *Deal_data;      //定义需要处理的数据
     Deal_data = buffer.data();
+
+//    for(int i;i<1002;i++)
+//        qDebug("%d:%02x\r",i,buffer.at(i));
 
     if(Deal_data[0]!='\xAA'||Deal_data[1001]!='\xBB')
         return;
@@ -74,11 +87,12 @@ void Myfarmer::Time_Dispose_data(QByteArray buffer)
     m_Farm_Data.Data_6=ui->lineEdit_one_6->text();
 
 
-    Auto_1_state=Char_to_data(&Deal_data[161]);//Auto状态
+    Auto_1_state=Char_to_data_2(&Deal_data[161]);//Auto状态
+//    qDebug("%x",Auto_1_state);
     switch(Auto_1_state)
     {
-    case 1: ui->label_Auto_1->setText("手动模式中");m_Farm_Data.sta="手动模式";break;
-    case 2: ui->label_Auto_1->setText("自动模式中");m_Farm_Data.sta="自动模式";break;
+    case 1: ui->label_Auto_1->setText("手动模式中");m_Farm_Data.sta=tr("手动模式");break;
+    case 2: ui->label_Auto_1->setText("自动模式中");m_Farm_Data.sta=tr("自动模式");break;
     default: break;
 
     }
@@ -87,7 +101,8 @@ void Myfarmer::Time_Dispose_data(QByteArray buffer)
     ui->lineEdit_one_set_2->setText(QString::number(Char_to_data(&Deal_data[167])));//阈值2
     ui->lineEdit_one_set_3->setText(QString::number(Char_to_data(&Deal_data[169])));//阈值3
 
-    Relay_1_state=Char_to_data(&Deal_data[179]);//继电器状态
+    Relay_1_state=Char_to_data_2(&Deal_data[179]);//继电器状态
+//    qDebug("%x",Relay_1_state);
     if(Relay_1_state&1<<0) {ui->label_farmone_LED1->setPixmap(QPixmap(":/source/pic/light_on.gif"));    m_Farm_Data.con_1=tr("打开");} else {ui->label_farmone_LED1->setPixmap(QPixmap(":/source/pic/light_off.gif"));    m_Farm_Data.con_1=tr("关闭");}
     if(Relay_1_state&1<<1) {ui->label_farmone_LED2->setPixmap(QPixmap(":/source/pic/light_on.gif"));     m_Farm_Data.con_2=tr("打开");} else {ui->label_farmone_LED2->setPixmap(QPixmap(":/source/pic/light_off.gif"));    m_Farm_Data.con_2=tr("关闭");}
     if(Relay_1_state&1<<2) {ui->label_farmone_LED3->setPixmap(QPixmap(":/source/pic/light_on.gif"));     m_Farm_Data.con_3=tr("打开");} else {ui->label_farmone_LED3->setPixmap(QPixmap(":/source/pic/light_off.gif"));    m_Farm_Data.con_3=tr("关闭");}

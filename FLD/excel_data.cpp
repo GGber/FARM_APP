@@ -42,6 +42,7 @@ void Excel_Data::ADD_Data_DB(Farm_Data* Get_Data)
             My_query.addBindValue(Get_Data->con_2);
             My_query.addBindValue(Get_Data->con_3);
             My_query.addBindValue(Get_Data->sta);
+//            qDebug()<<Get_Data->sta<<endl;
             My_query.exec();
 
 
