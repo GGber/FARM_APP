@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include <QSerialPort>
 #include <QSerialPortInfo>
+#include <QStringList>
 #include <QMessageBox>
 #include "myfarmer.h"
 #include "excel_data.h"
@@ -57,6 +58,8 @@ private:
     quint8 serial_exist_queue[20];//存在的串口
 
     QSerialPort *Myserial;
+
+    QStringList oldPortStringList;
 
 
 private slots:

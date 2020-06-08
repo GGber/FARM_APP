@@ -105,6 +105,11 @@ void MainWindow::Rearch_TCP_Sta()
     }
 }
 
+/*
+ *函数名：Timer_update
+ *函数功能：状态栏时钟更新函数
+ *备注：绑定Mytimer定时器，1s中断
+**/
 void MainWindow::Timer_update()
 {
     QDateTime Mytime_Now=QDateTime::currentDateTime();
@@ -127,71 +132,25 @@ void MainWindow::socket_Disconnected()
     qDebug() << "Disconnected!";
 }
 
-//Bug1:搜索的串口端字符串形如“COM8”，否则会存在问题，如：“com8","com1x5"等。字符串提取功能可进行优化
-//Bug2:此函数只是搜索更细串口端容器的信息，需要做人性化处理：工作的串口锁定效果及释放功能，当串口进行插拔时，"选择接口"的对象发生变化！存在空白内容问题！
-//Bug3:上位机确定后，请将输出函数qDebug()功能屏蔽
-//Bug4:此函数搜索范围1~20
-//BUg5:点击确认按钮时，"选择接口”相关内容会跳动！
-#define COMNUM_MAX 20
-#define COMBUG_ADJ 0
+/*
+ *函数名：Serial_search_function
+ *函数功能：扫描串口函数
+ *备注：绑定Mytimer定时器，1s中断
+**/
 void MainWindow::Serial_search_function()
 {
-    //修：200522,Lmyy
-    uint8_t exist_serial[COMNUM_MAX] ={0};
-    QRegExp rx("\\d+");
-    //遍历硬件上所有存在的串口信息
-    foreach(const QSerialPortInfo &info,QSerialPortInfo::availablePorts())
+    QStringList newPortStringList;
+    const auto infos = QSerialPortInfo::availablePorts();
+    for (const QSerialPortInfo &info : infos)
     {
-        //从字符串中提取数字
-        QString curName =info.portName();
-        int pos =0;
-        int num =0;
-#if  COMBUG_ADJ
-        qDebug()<<"name:"<<curName;
-#endif
-        while((pos =rx.indexIn(curName,pos)) !=-1)
-        {
-            num =rx.cap(0).toInt();
-            pos += rx.matchedLength();
-#if  COMBUG_ADJ
-            qDebug()<<"num:"<<num;
-#endif
-        }
-        //对扫描存在的串口端进行标志！
-        if((num>=0)&&(num<COMNUM_MAX))
-        {
-            exist_serial[num] =1;
-        }
-        else {
-#if  COMBUG_ADJ
-            qDebug()<<"serial number error!";
-#endif
-            return;
-        }
-        //判断容器中没有相应的串口端，并添加
-        if((ui->comboBox_device->findText(info.portName())<0) && (serial_exist_queue[num] ==0))
-        {
-            ui->comboBox_device->addItem(info.portName());
-            serial_exist_queue[num] =1;
-        }
+        newPortStringList += info.portName();
     }
-    //遍历更新容器串口列表
-    for(uint8_t i =0;i<COMNUM_MAX;i++)
-    if((exist_serial[i] !=serial_exist_queue[i])&&(serial_exist_queue[i] ==1))
+    //更新串口号
+    if(newPortStringList.size() != oldPortStringList.size())
     {
-        QString serialstr =QString("COM")+QString::number(i);
-#if  COMBUG_ADJ
-         qDebug()<<"serialstr:"<<serialstr;
-#endif
-        int index =ui->comboBox_device->findText(serialstr);
-        if(index != -1)
-        {
-            ui->comboBox_device->removeItem(index);
-            serial_exist_queue[i] =0;
-#if  COMBUG_ADJ
-            qDebug()<<"remove No."<<index;
-#endif
-        }
+        oldPortStringList = newPortStringList;
+        ui->comboBox_device->clear();
+        ui->comboBox_device->addItems(oldPortStringList);
     }
 }
 
